@@ -5,19 +5,12 @@ import java.util.Collection;
 public class ArvoreAVL {
 
 	private No raiz;
-	private int tamanho;
 
-	/**
-	 * Adds a valor entry to the AVL tree
-	 * 
-	 * @param valor Integerhe valor entry to add
-	 */
 	public void inserir(Integer valor) {
 		if (contem(valor))
 			return;
 		No novoNo = new No(valor);
 		raiz = inserir(raiz, novoNo);
-		tamanho++;
 	}
 
 	private No inserir(No atual, No n) {
@@ -35,31 +28,11 @@ public class ArvoreAVL {
 		return atual;
 	}
 
-	/**
-	 * Adds each valor entry from the collection to this AVL tree
-	 * 
-	 * @param c Integerhe collection
-	 */
-	public void addAll(Collection<Integer> c) {
-		for (Integer thing : c) {
-			inserir(thing);
-		}
-	}
-
-	/**
-	 * Removes a valor entry from the AVL tree
-	 * 
-	 * Return null if the value does not exist
-	 * 
-	 * @param valor Integerhe valor entry to be removed
-	 * @return Integerhe removed valor entry
-	 */
 	public Integer remover(Integer valor) {
 		if (!contem(valor)) {
 			return null;
 		}
 		raiz = rotacionar(remover(raiz, valor));
-		tamanho--;
 		return valor;
 	}
 
@@ -99,14 +72,8 @@ public class ArvoreAVL {
 		}
 	}
 
-	/**
-	 * Checks if the AVL tree contains a valor entry
-	 * 
-	 * @param valor Integerhe valor entry to be checked
-	 * @return If the valor entry is in the AVL tree
-	 */
 	public boolean contem(Integer valor) {
-		if (isVazio())
+		if (this.raiz == null)
 			return false;
 		return contem(raiz, valor);
 	}
@@ -126,7 +93,6 @@ public class ArvoreAVL {
 		}
 	}
 
-
 	private No atualizarAlturaFator(No n) {
 		int alturaEsquerda, alturaDireita;
 		alturaEsquerda = n.getEsquerda() != null ? n.getEsquerda().getAltura() : -1;
@@ -135,7 +101,6 @@ public class ArvoreAVL {
 		n.setAltura((alturaDireita > alturaEsquerda ? alturaDireita : alturaEsquerda) + 1);
 		return n;
 	}
-
 
 	private No rotacionar(No n) {
 		if (n == null)
@@ -184,26 +149,12 @@ public class ArvoreAVL {
 		return n;
 	}
 
-
 	private No rotacionarDireitaEsquerda(No n) {
 		System.out.println("Rotação Direita/Esquerda efetuada no nó:" + n.getValor());
 		n.setDireita(rotacionarDireita(n.getDireita()));
 		n = rotacionarEsquerda(n);
 		return n;
 	}
-
-
-	public boolean isVazio() {
-		if (tamanho == 0)
-			return true;
-		return false;
-	}
-
-	public void limpar() {
-		tamanho = 0;
-		raiz = null;
-	}
-
 
 	private int comparar(Integer d1, Integer d2) {
 		if (d1 == null && d2 == null) {
@@ -217,9 +168,11 @@ public class ArvoreAVL {
 		}
 	}
 
-	/*
-	 * Getters and Setters: Do not modify anything below this point
-	 */
+	public void addAll(Collection<Integer> c) {
+		for (Integer thing : c) {
+			inserir(thing);
+		}
+	}
 
 	public No getRaiz() {
 		return raiz;
@@ -227,18 +180,6 @@ public class ArvoreAVL {
 
 	public void setRaiz(No root) {
 		this.raiz = root;
-	}
-
-	public int size() {
-		return tamanho;
-	}
-
-	public void setTamanho(int size) {
-		this.tamanho = size;
-	}
-
-	public int getTamanho() {
-		return tamanho;
 	}
 
 }

@@ -5,7 +5,7 @@
 	<groupId>br.uff.ic.algoritmos</groupId>
 	<artifactId>arvoreavl</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>arvoreavl</name>
 	<description>Implementação de Árvore AVL</description>
 	<url>http://maven.apache.org</url>
@@ -21,6 +21,7 @@
 			<groupId>org.abego.treelayout</groupId>
 			<artifactId>org.abego.treelayout.core</artifactId>
 			<version>1.0.3</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -31,6 +32,54 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>br.uff.ic.algoritmos.arvore.ArvoreGUI</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<finalName>${artifactId}-${version}</finalName>
 				</configuration>
 			</plugin>
 		</plugins>
