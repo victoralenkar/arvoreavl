@@ -4,11 +4,14 @@ import java.awt.Container;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
 import org.abego.treelayout.TreeForTreeLayout;
 import org.abego.treelayout.TreeLayout;
@@ -31,10 +34,13 @@ public class ArvoreGUI extends JFrame {
 	private static void showInDialog(JDialog dialog, JComponent panel) {
 		Container contentPane = dialog.getContentPane();
 		((JComponent) contentPane).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		panel.setAutoscrolls(true);
+		JScrollPane jScrollPane = new JScrollPane();
+		jScrollPane.add(panel);
+		jScrollPane.setViewportView(panel);
 		contentPane.removeAll();
-		contentPane.add(panel);
+		contentPane.add(jScrollPane);
 		dialog.pack();
-		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 	}
 
@@ -79,16 +85,55 @@ public class ArvoreGUI extends JFrame {
 		return tree;
 	}
 
+	public static Integer[] gerarAleatorios(int tamanho) {
+		Integer[] arr = new Integer[tamanho];
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = i;
+		}
+		Collections.shuffle(Arrays.asList(arr));
+		return arr;
+	}
+
 	public static void main(String[] args) throws IOException {
-		JDialog dialog = new JDialog();
+		JDialog dialog = new JDialog();		
+		dialog.setTitle("Árvore Atual");
+		JDialog anterior = new JDialog();
+		anterior.setTitle("Árvore Anterior");
 		ArvoreAVL arvore = new ArvoreAVL();
-		// 25,75,30,20,12,23,90,73,72,31,29,6,45,110,122,130,140,3,109,119,118,121,123
+
+		System.out.println(
+				"Carregamento inicial da árvore. Com quantos números aleatórios deseja carregar inicialmente a árvore? ");
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String leitura = br.readLine();
+		Integer[] randoms = null;
+		try {
+			Integer tamanho = Integer.parseInt(leitura);
+			randoms = gerarAleatorios(tamanho);
+			System.out.println("Valores aleatórios inseridos na seguinte ordem:");
+			System.out.println();
+			for (int i = 0; i < randoms.length; i++) {
+				arvore.inserir(randoms[i].intValue());
+				if (i == randoms.length - 1) {
+					System.out.print(randoms[i].intValue());
+				} else {
+					System.out.print(randoms[i].intValue() + ", ");
+				}
+			}
+			if (arvore != null && arvore.getRaiz() != null) {
+				showInDialog(dialog, getPanel(arvore));
+			}
+		} catch (NumberFormatException e1) {
+			System.out.println("Valor digitado não é um número!");
+			System.exit(1);
+		}
+		System.out.println();
+		arvore.setDebug(true);
 		while (true) {
 
 			System.out.println();
 			System.out.print("Escolha uma opção (B)uscar, (I)nserir, (R)emover, (S)air: ");
-			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			String leitura = br.readLine();
+			br = new BufferedReader(new InputStreamReader(System.in));
+			leitura = br.readLine();
 
 			if (leitura.equalsIgnoreCase("b")) {
 				System.out.print("Digite o valor a ser buscado: ");
@@ -108,11 +153,13 @@ public class ArvoreGUI extends JFrame {
 					System.out.println();
 				}
 			} else if (leitura.equalsIgnoreCase("i")) {
-
 				System.out.print("Digite o valor a ser inserido: ");
 				br = new BufferedReader(new InputStreamReader(System.in));
 				leitura = br.readLine();
 				System.out.println();
+				if (dialog != null) {
+					showInDialog(anterior, getPanel(arvore));
+				}
 				arvore.resetComparacoes();
 				try {
 					if (arvore.inserir(Integer.parseInt(leitura))) {
@@ -132,6 +179,9 @@ public class ArvoreGUI extends JFrame {
 				br = new BufferedReader(new InputStreamReader(System.in));
 				leitura = br.readLine();
 				System.out.println();
+				if (dialog != null) {
+					showInDialog(anterior, getPanel(arvore));
+				}
 				arvore.resetComparacoes();
 				try {
 					if (arvore.remover(Integer.parseInt(leitura)) != null) {
@@ -155,6 +205,7 @@ public class ArvoreGUI extends JFrame {
 			}
 			if (arvore != null && arvore.getRaiz() != null) {
 				showInDialog(dialog, getPanel(arvore));
+				anterior.setLocation(anterior.getX(), dialog.getY()+dialog.getHeight());				
 			}
 		}
 
@@ -177,6 +228,7 @@ public class ArvoreGUI extends JFrame {
 
 		// Create a panel that draws the nodes and edges and show the panel
 		TextInBoxTreePane panel = new TextInBoxTreePane(treeLayout);
+		panel.setAutoscrolls(true);
 		return panel;
 	}
 
