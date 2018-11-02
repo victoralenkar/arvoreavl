@@ -6,6 +6,7 @@ public class ArvoreAVL {
 
 	private No raiz;
 	private int comparacoes;
+	private boolean debug;
 
 	public boolean inserir(Integer valor) {
 		boolean contem = buscar(raiz, valor);
@@ -51,7 +52,7 @@ public class ArvoreAVL {
 	}
 
 	public Integer remover(Integer valor) {
-		if (!buscar(raiz,valor)) {
+		if (!buscar(raiz, valor)) {
 			return null;
 		}
 		this.resetComparacoes();
@@ -95,29 +96,6 @@ public class ArvoreAVL {
 		}
 	}
 
-/*	public boolean contem(Integer valor) {
-		if (this.raiz == null) {
-			return false;
-		}
-		return contem(raiz, valor);
-	}
-
-	private boolean contem(No atual, Integer n) {
-		if (atual == null) {
-			return false;
-		}
-		if (comparar(atual.getValor(), n) == 0) {
-			return true;
-		} else {
-			if (contem(atual.getDireita(), n)) {
-				return true;
-			} else if (contem(atual.getEsquerda(), n)) {
-				return true;
-			}
-			return false;
-		}
-	}*/
-
 	public void resetComparacoes() {
 		this.comparacoes = 0;
 	}
@@ -152,7 +130,9 @@ public class ArvoreAVL {
 	}
 
 	private No rotacionarEsquerda(No n) {
-		System.out.println("Rotação à esquerda efetuada no nó:" + n.getValor());
+		if (debug) {
+			System.out.println("Rotação à esquerda efetuada no nó:" + n.getValor());
+		}
 		No novaRaiz = n.getDireita();
 		No temp = n.getDireita().getEsquerda();
 		n.getDireita().setEsquerda(n);
@@ -162,7 +142,9 @@ public class ArvoreAVL {
 	}
 
 	private No rotacionarDireita(No n) {
-		System.out.println("Rotação à direita efetuada no nó:" + n.getValor());
+		if (debug) {
+			System.out.println("Rotação à direita efetuada no nó:" + n.getValor());
+		}
 		No newRoot = n.getEsquerda();
 		No temp = n.getEsquerda().getDireita();
 		n.getEsquerda().setDireita(n);
@@ -172,14 +154,18 @@ public class ArvoreAVL {
 	}
 
 	private No rotacionarEsquerdaDireita(No n) {
-		System.out.println("Rotação Esquerda/Direita efetuada no nó:" + n.getValor());
+		if (debug) {
+			System.out.println("Rotação Esquerda/Direita efetuada no nó:" + n.getValor());
+		}
 		n.setEsquerda(rotacionarEsquerda(n.getEsquerda()));
 		n = rotacionarDireita(n);
 		return n;
 	}
 
 	private No rotacionarDireitaEsquerda(No n) {
-		System.out.println("Rotação Direita/Esquerda efetuada no nó:" + n.getValor());
+		if (debug) {
+			System.out.println("Rotação Direita/Esquerda efetuada no nó:" + n.getValor());
+		}
 		n.setDireita(rotacionarDireita(n.getDireita()));
 		n = rotacionarEsquerda(n);
 		return n;
@@ -217,6 +203,14 @@ public class ArvoreAVL {
 
 	public void setComparacoes(int comparacoes) {
 		this.comparacoes = comparacoes;
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 }
