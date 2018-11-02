@@ -5,12 +5,32 @@ import java.util.Collection;
 public class ArvoreAVL {
 
 	private No raiz;
+	private int comparacoes;
 
-	public void inserir(Integer valor) {
-		if (contem(valor))
-			return;
-		No novoNo = new No(valor);
-		raiz = inserir(raiz, novoNo);
+	public boolean inserir(Integer valor) {
+		boolean contem = buscar(raiz, valor);
+		if (!contem) {
+			No novoNo = new No(valor);
+			this.resetComparacoes();
+			raiz = inserir(raiz, novoNo);
+		}
+		return !contem;
+	}
+
+	public boolean buscar(No atual, int valor) {
+		if (atual == null) {
+			return false;
+		}
+		this.comparacoes++;
+		if (atual.getValor().intValue() == valor) {
+			return true;
+		} else {
+			if (valor < atual.getValor().intValue()) {
+				return buscar(atual.getEsquerda(), valor);
+			} else {
+				return buscar(atual.getDireita(), valor);
+			}
+		}
 	}
 
 	private No inserir(No atual, No n) {
@@ -21,23 +41,26 @@ public class ArvoreAVL {
 		}
 		if (comparar(n.getValor(), atual.getValor()) > 0) {
 			atual.setDireita(rotacionar(inserir(atual.getDireita(), n)));
+			this.comparacoes++;
 		} else {
 			atual.setEsquerda(rotacionar(inserir(atual.getEsquerda(), n)));
+			this.comparacoes++;
 		}
 		atual = rotacionar(atual);
 		return atual;
 	}
 
 	public Integer remover(Integer valor) {
-		if (!contem(valor)) {
+		if (!buscar(raiz,valor)) {
 			return null;
 		}
+		this.resetComparacoes();
 		raiz = rotacionar(remover(raiz, valor));
 		return valor;
 	}
 
 	private No remover(No atual, Integer n) {
-
+		this.comparacoes++;
 		if (comparar(atual.getValor(), n) == 0) {
 			if (atual.getDireita() == null && atual.getEsquerda() == null) {
 				return null;
@@ -72,15 +95,17 @@ public class ArvoreAVL {
 		}
 	}
 
-	public boolean contem(Integer valor) {
-		if (this.raiz == null)
+/*	public boolean contem(Integer valor) {
+		if (this.raiz == null) {
 			return false;
+		}
 		return contem(raiz, valor);
 	}
 
 	private boolean contem(No atual, Integer n) {
-		if (atual == null)
+		if (atual == null) {
 			return false;
+		}
 		if (comparar(atual.getValor(), n) == 0) {
 			return true;
 		} else {
@@ -91,6 +116,10 @@ public class ArvoreAVL {
 			}
 			return false;
 		}
+	}*/
+
+	public void resetComparacoes() {
+		this.comparacoes = 0;
 	}
 
 	private No atualizarAlturaFator(No n) {
@@ -123,7 +152,7 @@ public class ArvoreAVL {
 	}
 
 	private No rotacionarEsquerda(No n) {
-		System.out.println("Rotação à Esquerda efetuada no nó:" + n.getValor());
+		System.out.println("Rotação à esquerda efetuada no nó:" + n.getValor());
 		No novaRaiz = n.getDireita();
 		No temp = n.getDireita().getEsquerda();
 		n.getDireita().setEsquerda(n);
@@ -133,7 +162,7 @@ public class ArvoreAVL {
 	}
 
 	private No rotacionarDireita(No n) {
-		System.out.println("Rotação à Direita efetuada no nó:" + n.getValor());
+		System.out.println("Rotação à direita efetuada no nó:" + n.getValor());
 		No newRoot = n.getEsquerda();
 		No temp = n.getEsquerda().getDireita();
 		n.getEsquerda().setDireita(n);
@@ -180,6 +209,14 @@ public class ArvoreAVL {
 
 	public void setRaiz(No root) {
 		this.raiz = root;
+	}
+
+	public int getComparacoes() {
+		return comparacoes;
+	}
+
+	public void setComparacoes(int comparacoes) {
+		this.comparacoes = comparacoes;
 	}
 
 }

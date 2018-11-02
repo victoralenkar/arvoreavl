@@ -53,6 +53,10 @@ public class ArvoreGUI extends JFrame {
 			if (filhoEsquerda != null) {
 				String data = String.valueOf(filhoEsquerda.getValor());
 				int dataWidth = 15 * data.length();
+				if (pai.getDireita() == null) {
+					data += "(esq)";
+					dataWidth += 25;
+				}
 				noFilho = new TextInBox(data, dataWidth, 20);
 				tree.addChild(paiBox, noFilho);
 				createTree(tree, noFilho, filhoEsquerda);
@@ -62,6 +66,10 @@ public class ArvoreGUI extends JFrame {
 			if (filhoDireita != null) {
 				String data = String.valueOf(filhoDireita.getValor());
 				int dataWidth = 15 * data.length();
+				if (pai.getEsquerda() == null) {
+					data += "(dir)";
+					dataWidth += 25;
+				}
 				noFilho = new TextInBox(data, dataWidth, 20);
 				tree.addChild(paiBox, noFilho);
 				createTree(tree, noFilho, filhoDireita);
@@ -76,18 +84,77 @@ public class ArvoreGUI extends JFrame {
 		ArvoreAVL arvore = new ArvoreAVL();
 		// 25,75,30,20,12,23,90,73,72,31,29,6,45,110,122,130,140,3,109,119,118,121,123
 		while (true) {
-			System.out.println("Digite \"-\" quando quiser sair...");
-			System.out.print("Inserir um valor: ");
+
+			System.out.println();
+			System.out.print("Escolha uma opção (B)uscar, (I)nserir, (R)emover, (S)air: ");
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			String leitura = br.readLine();
-			if (leitura != null && !leitura.equals("-")) {
-				arvore.inserir(Integer.parseInt(leitura));
-				System.out.print("Valor inserido com sucesso!");
+
+			if (leitura.equalsIgnoreCase("b")) {
+				System.out.print("Digite o valor a ser buscado: ");
+				br = new BufferedReader(new InputStreamReader(System.in));
+				leitura = br.readLine();
+				arvore.resetComparacoes();
+				try {
+					if (arvore.buscar(arvore.getRaiz(), Integer.parseInt(leitura))) {
+						System.out.println("Valor encontrado!");
+						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+					} else {
+						System.out.println("Valor não encontrado!");
+						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("O valor digitado não é número! Tente novamente!");
+					System.out.println();
+				}
+			} else if (leitura.equalsIgnoreCase("i")) {
+
+				System.out.print("Digite o valor a ser inserido: ");
+				br = new BufferedReader(new InputStreamReader(System.in));
+				leitura = br.readLine();
 				System.out.println();
-				showInDialog(dialog, getPanel(arvore));
-			} else {
+				arvore.resetComparacoes();
+				try {
+					if (arvore.inserir(Integer.parseInt(leitura))) {
+						System.out.println("Valor inserido com sucesso!");
+						System.out.println();
+						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+					} else {
+						System.out.println("Valor já existente na árvore!");
+						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("O valor digitado não é número! Tente novamente!");
+					System.out.println();
+				}
+			} else if (leitura.equalsIgnoreCase("r")) {
+				System.out.print("Digite o valor a ser removido: ");
+				br = new BufferedReader(new InputStreamReader(System.in));
+				leitura = br.readLine();
+				System.out.println();
+				arvore.resetComparacoes();
+				try {
+					if (arvore.remover(Integer.parseInt(leitura)) != null) {
+						System.out.println("Valor removido com sucesso!");
+						System.out.println();
+						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+					} else {
+						System.out.println("Valor não encontrado para remoção!");
+						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("O valor digitado não é número! Tente novamente!");
+					System.out.println();
+				}
+			} else if (leitura.equalsIgnoreCase("s")) {
 				br.close();
 				System.exit(0);
+			} else {
+				System.out.println();
+				System.out.println("Opção " + leitura + " inválida, tente novamente!");
+			}
+			if (arvore != null && arvore.getRaiz() != null) {
+				showInDialog(dialog, getPanel(arvore));
 			}
 		}
 

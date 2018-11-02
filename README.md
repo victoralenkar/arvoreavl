@@ -1,3 +1,3 @@
 # arvoreavl
 
-java -jar arvoreavl-1.0.jar
+java -jar arvoreavl-1.5.jar
