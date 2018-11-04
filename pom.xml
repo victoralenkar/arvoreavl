@@ -5,7 +5,7 @@
 	<groupId>br.uff.ic.algoritmos</groupId>
 	<artifactId>arvoreavl</artifactId>
 	<packaging>jar</packaging>
-	<version>1.6</version>
+	<version>1.7</version>
 	<name>arvoreavl</name>
 	<description>Implementação de Árvore AVL</description>
 	<url>http://maven.apache.org</url>

@@ -69,7 +69,7 @@ public class ArvoreAVL {
 	}
 	
 	private No rotacionarDireita(No y,boolean debugLocal) {
-		if (debugLocal) {
+		if (debugLocal && this.debug) {
 			System.out.println("Rotação Direita em nó: "+raiz.getValor());
 			System.out.println("T1, T2 e T3 são subárvores.");
 			System.out.println("                y                                x");
@@ -93,7 +93,7 @@ public class ArvoreAVL {
 	}
 
 	private No rotacionarEsquerda(No y, boolean debugLocal) {
-		if (debugLocal) {
+		if (debugLocal && this.debug) {
 			System.out.println("T1, T2 e T3 são subárvores.");
 			System.out.println("Rotação Esquerda em nó: "+raiz.getValor());
 			System.out.println("               y                                 x");
