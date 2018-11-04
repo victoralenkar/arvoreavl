@@ -2,7 +2,9 @@ package br.uff.ic.algoritmos.arvore;
 
 import java.awt.Container;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -96,129 +98,139 @@ public class ArvoreGUI extends JFrame {
 	}
 
 	public static void main(String[] args) throws IOException {
-		JDialog dialog = new JDialog();		
-		dialog.setTitle("Árvore Atual");
-		JDialog anterior = new JDialog();
-		anterior.setTitle("Árvore Anterior");
-		ArvoreAVL arvore = new ArvoreAVL();
+		if (args[0].equals("-g")) {
+			File f = new File(args[1]);
+			f.createNewFile();
+			String conteudo = "";
+			FileWriter fw = new FileWriter(f);
+			try {
+				Integer[] aleatorios = gerarAleatorios(Integer.parseInt(args[2]));
+				for (Integer i = 0; i < aleatorios.length; i++) {
+					if (i < aleatorios.length - 1) {
+						conteudo += "" + aleatorios[i].intValue() + "\n";
+					} else {
+						conteudo += "" + aleatorios[i].intValue();
+					}
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Parâmetro inválido. Tente novamente!");
+				System.exit(1);
+			}
+			fw.write(conteudo);
+			fw.flush();
+			fw.close();
+		} else {
 
-		/*System.out.println(
-				"Carregamento inicial da árvore. Com quantos números aleatórios deseja carregar inicialmente a árvore? ");*/
-		//BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
-		FileReader fileReader = new FileReader(args[0]);
-		BufferedReader br = new BufferedReader(fileReader);
-		
-		String leitura = br.readLine();
-		leitura.replace(" ", "");
-		String[] numeros = leitura.split(",");
-		Integer[] randoms = new Integer[numeros.length];
-		for (int i = 0; i < numeros.length; i++) {
-			randoms[i]= Integer.valueOf(numeros[i]);
-		}
-		try {
-			//Integer tamanho = Integer.parseInt(leitura);
-			//randoms = gerarAleatorios(tamanho);
-			System.out.println("Valores aleatórios inseridos na seguinte ordem:");
+			JDialog dialog = new JDialog();
+			dialog.setTitle("Árvore Atual");
+			JDialog anterior = new JDialog();
+			anterior.setTitle("Árvore Anterior");
+			ArvoreAVL arvore = new ArvoreAVL();
+
+			FileReader fileReader = new FileReader(args[0]);
+			BufferedReader br = new BufferedReader(fileReader);
+
+			String leitura = "";
+			try {
+				System.out.println("Valores aleatórios inseridos na seguinte ordem:");
+				System.out.println();
+				String linha="";
+				while ((leitura = br.readLine()) != null) {
+					int valor = Integer.parseInt(leitura);
+					arvore.inserir(valor);
+					linha +=""+valor+", ";
+				}
+				System.out.println(linha.substring(0,linha.length()-2));
+				if (arvore != null && arvore.getRaiz() != null) {
+					showInDialog(dialog, getPanel(arvore));
+				}
+			} catch (NumberFormatException e1) {
+				System.out.println("Valor digitado não é um número!");
+				System.exit(1);
+			}
 			System.out.println();
-			for (int i = 0; i < randoms.length; i++) {
-				arvore.inserir(randoms[i].intValue());
-				if (i == randoms.length - 1) {
-					System.out.print(randoms[i].intValue());
+			arvore.setDebug(true);
+			while (true) {
+
+				System.out.println();
+				System.out.print("Escolha uma opção (B)uscar, (I)nserir, (R)emover, (S)air: ");
+				br = new BufferedReader(new InputStreamReader(System.in));
+				leitura = br.readLine();
+
+				if (leitura.equalsIgnoreCase("b")) {
+					System.out.print("Digite o valor a ser buscado: ");
+					br = new BufferedReader(new InputStreamReader(System.in));
+					leitura = br.readLine();
+					arvore.resetComparacoes();
+					try {
+						if (arvore.buscar(arvore.getRaiz(), Integer.parseInt(leitura))) {
+							System.out.println("Valor encontrado!");
+							System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+						} else {
+							System.out.println("Valor não encontrado!");
+							System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+						}
+					} catch (NumberFormatException e) {
+						System.out.println("O valor digitado não é número! Tente novamente!");
+						System.out.println();
+					}
+				} else if (leitura.equalsIgnoreCase("i")) {
+					System.out.print("Digite o valor a ser inserido: ");
+					br = new BufferedReader(new InputStreamReader(System.in));
+					leitura = br.readLine();
+					System.out.println();
+					if (dialog != null) {
+						showInDialog(anterior, getPanel(arvore));
+					}
+					arvore.resetComparacoes();
+					try {
+						if (arvore.inserir(Integer.parseInt(leitura))) {
+							System.out.println("Valor inserido com sucesso!");
+							System.out.println();
+							System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+						} else {
+							System.out.println("Valor já existente na árvore!");
+							System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+						}
+					} catch (NumberFormatException e) {
+						System.out.println("O valor digitado não é número! Tente novamente!");
+						System.out.println();
+					}
+				} else if (leitura.equalsIgnoreCase("r")) {
+					System.out.print("Digite o valor a ser removido: ");
+					br = new BufferedReader(new InputStreamReader(System.in));
+					leitura = br.readLine();
+					System.out.println();
+					if (dialog != null) {
+						showInDialog(anterior, getPanel(arvore));
+					}
+					arvore.resetComparacoes();
+					try {
+						if (arvore.remover(Integer.parseInt(leitura)) != null) {
+							System.out.println("Valor removido com sucesso!");
+							System.out.println();
+							System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+						} else {
+							System.out.println("Valor não encontrado para remoção!");
+							System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
+						}
+					} catch (NumberFormatException e) {
+						System.out.println("O valor digitado não é número! Tente novamente!");
+						System.out.println();
+					}
+				} else if (leitura.equalsIgnoreCase("s")) {
+					br.close();
+					System.exit(0);
 				} else {
-					System.out.print(randoms[i].intValue() + ", ");
-				}
-			}
-			if (arvore != null && arvore.getRaiz() != null) {
-				showInDialog(dialog, getPanel(arvore));
-			}
-		} catch (NumberFormatException e1) {
-			System.out.println("Valor digitado não é um número!");
-			System.exit(1);
-		}
-		System.out.println();
-		arvore.setDebug(true);
-		while (true) {			
-
-			System.out.println();
-			System.out.print("Escolha uma opção (B)uscar, (I)nserir, (R)emover, (S)air: ");
-			br = new BufferedReader(new InputStreamReader(System.in));
-			leitura = br.readLine();
-
-			if (leitura.equalsIgnoreCase("b")) {
-				System.out.print("Digite o valor a ser buscado: ");
-				br = new BufferedReader(new InputStreamReader(System.in));
-				leitura = br.readLine();
-				arvore.resetComparacoes();
-				try {
-					if (arvore.buscar(arvore.getRaiz(), Integer.parseInt(leitura))) {
-						System.out.println("Valor encontrado!");
-						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
-					} else {
-						System.out.println("Valor não encontrado!");
-						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("O valor digitado não é número! Tente novamente!");
 					System.out.println();
+					System.out.println("Opção " + leitura + " inválida, tente novamente!");
 				}
-			} else if (leitura.equalsIgnoreCase("i")) {
-				System.out.print("Digite o valor a ser inserido: ");
-				br = new BufferedReader(new InputStreamReader(System.in));
-				leitura = br.readLine();
-				System.out.println();
-				if (dialog != null) {
-					showInDialog(anterior, getPanel(arvore));
+				if (arvore != null && arvore.getRaiz() != null) {
+					showInDialog(dialog, getPanel(arvore));
+					anterior.setLocation(dialog.getX(), dialog.getY() + dialog.getHeight());
 				}
-				arvore.resetComparacoes();
-				try {
-					if (arvore.inserir(Integer.parseInt(leitura))) {
-						System.out.println("Valor inserido com sucesso!");
-						System.out.println();
-						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
-					} else {
-						System.out.println("Valor já existente na árvore!");
-						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("O valor digitado não é número! Tente novamente!");
-					System.out.println();
-				}
-			} else if (leitura.equalsIgnoreCase("r")) {
-				System.out.print("Digite o valor a ser removido: ");
-				br = new BufferedReader(new InputStreamReader(System.in));
-				leitura = br.readLine();
-				System.out.println();
-				if (dialog != null) {
-					showInDialog(anterior, getPanel(arvore));
-				}
-				arvore.resetComparacoes();
-				try {
-					if (arvore.remover(Integer.parseInt(leitura)) != null) {
-						System.out.println("Valor removido com sucesso!");
-						System.out.println();
-						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
-					} else {
-						System.out.println("Valor não encontrado para remoção!");
-						System.out.println("Quantidade de comparações: " + arvore.getComparacoes());
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("O valor digitado não é número! Tente novamente!");
-					System.out.println();
-				}
-			} else if (leitura.equalsIgnoreCase("s")) {
-				br.close();
-				System.exit(0);
-			} else {
-				System.out.println();
-				System.out.println("Opção " + leitura + " inválida, tente novamente!");
-			}
-			if (arvore != null && arvore.getRaiz() != null) {
-				showInDialog(dialog, getPanel(arvore));
-				anterior.setLocation(dialog.getX(), dialog.getY()+dialog.getHeight());				
 			}
 		}
-
 	}
 
 	public static TextInBoxTreePane getPanel(ArvoreAVL arvore) {

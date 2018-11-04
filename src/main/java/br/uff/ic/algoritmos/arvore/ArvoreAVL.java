@@ -69,7 +69,7 @@ public class ArvoreAVL {
 	}
 	
 	private No rotacionarDireita(No y,boolean debugLocal) {
-		if (debugLocal) {
+		if (debugLocal && this.debug) {
 			System.out.println("Rotação Direita em nó: "+raiz.getValor());
 			System.out.println("T1, T2 e T3 são subárvores.");
 			System.out.println("                y                                x");
@@ -93,7 +93,7 @@ public class ArvoreAVL {
 	}
 
 	private No rotacionarEsquerda(No y, boolean debugLocal) {
-		if (debugLocal) {
+		if (debugLocal && this.debug) {
 			System.out.println("T1, T2 e T3 são subárvores.");
 			System.out.println("Rotação Esquerda em nó: "+raiz.getValor());
 			System.out.println("               y                                 x");
@@ -294,7 +294,6 @@ public class ArvoreAVL {
 		
 		// Caso 2:
 		if (balanco > 1 && getBalanco(no.getEsquerda()) < 0) {
-			if (this.debug) {
 				if (this.debug) {
 					System.out.println("Rotação Dupla iniciando em nó: "+no.getValor());
 					System.out.println("T1, T2, T3 e T4 são subárvores.");
@@ -306,7 +305,6 @@ public class ArvoreAVL {
 					System.out.println("                / \\                        / \\");
 					System.out.println("              T2   T3                     T1   T2");
 				}
-			}
 			no.setEsquerda(rotacionarEsquerda(no.getEsquerda(),true));
 			return rotacionarDireita(no,true);
 		}
@@ -332,17 +330,15 @@ public class ArvoreAVL {
 		// Caso 4:
 		if (balanco < -1 && getBalanco(no.getDireita()) > 0) {
 			if (this.debug) {
-				if (this.debug) {
-					System.out.println("Rotação Dupla iniciando em nó: "+no.getValor()+"...");
-					System.out.println("T1, T2, T3 e T4 são subárvores.");
-					System.out.println("               z                             z                             x");
-					System.out.println("              / \\                          / \\                          /   \\");
-					System.out.println("            T1   y    Rotação Dir. (y)    T1   x    Rotação Esq. (z)     z     y");
-					System.out.println("                / \\  - - - - - - - - ->     /  \\  - - - - - - - - ->  / \\   / \\");
-					System.out.println("               x   T4                      T2   y                    T1 T2 T3  T4");
-					System.out.println("              / \\                              /  \\");
-					System.out.println("            T2   T3                           T3   T4");
-				}
+				System.out.println("Rotação Dupla iniciando em nó: "+no.getValor()+"...");
+				System.out.println("T1, T2, T3 e T4 são subárvores.");
+				System.out.println("               z                             z                             x");
+				System.out.println("              / \\                          / \\                          /   \\");
+				System.out.println("            T1   y    Rotação Dir. (y)    T1   x    Rotação Esq. (z)     z     y");
+				System.out.println("                / \\  - - - - - - - - ->     /  \\  - - - - - - - - ->  / \\   / \\");
+				System.out.println("               x   T4                      T2   y                    T1 T2 T3  T4");
+				System.out.println("              / \\                              /  \\");
+				System.out.println("            T2   T3                           T3   T4");
 			}
 			no.setDireita(rotacionarDireita(no.getDireita(),true));
 			return rotacionarEsquerda(no,true);
