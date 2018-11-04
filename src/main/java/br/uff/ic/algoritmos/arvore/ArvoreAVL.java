@@ -1,21 +1,20 @@
 package br.uff.ic.algoritmos.arvore;
 
-import java.util.Collection;
-
 public class ArvoreAVL {
 
 	private No raiz;
 	private int comparacoes;
 	private boolean debug;
 
-	public boolean inserir(Integer valor) {
-		boolean contem = buscar(raiz, valor);
-		if (!contem) {
-			No novoNo = new No(valor);
-			this.resetComparacoes();
-			raiz = inserir(raiz, novoNo);
-		}
-		return !contem;
+	public ArvoreAVL() {
+		super();
+		this.raiz = null;
+		this.debug = false;
+		this.comparacoes = 0;
+	}
+
+	public void resetComparacoes() {
+		this.comparacoes = 0;
 	}
 
 	public boolean buscar(No atual, int valor) {
@@ -34,21 +33,13 @@ public class ArvoreAVL {
 		}
 	}
 
-	private No inserir(No atual, No n) {
-		if (atual == null) {
-			n.setFatorBalanco(0);
-			n.setAltura(0);
-			return n;
+	public boolean inserir(Integer valor) {
+		boolean encontrado = buscar(raiz, valor);
+		if (!encontrado) {
+			this.resetComparacoes();
+			this.raiz = inserir(this.raiz, valor);
 		}
-		if (comparar(n.getValor(), atual.getValor()) > 0) {
-			atual.setDireita(rotacionar(inserir(atual.getDireita(), n)));
-			this.comparacoes++;
-		} else {
-			atual.setEsquerda(rotacionar(inserir(atual.getEsquerda(), n)));
-			this.comparacoes++;
-		}
-		atual = rotacionar(atual);
-		return atual;
+		return !encontrado;
 	}
 
 	public Integer remover(Integer valor) {
@@ -56,145 +47,316 @@ public class ArvoreAVL {
 			return null;
 		}
 		this.resetComparacoes();
-		raiz = rotacionar(remover(raiz, valor));
+		this.raiz = this.remover(raiz, valor);
 		return valor;
 	}
 
-	private No remover(No atual, Integer n) {
-		this.comparacoes++;
-		if (comparar(atual.getValor(), n) == 0) {
-			if (atual.getDireita() == null && atual.getEsquerda() == null) {
-				return null;
-			} else if (atual.getDireita() == null) {
-				return rotacionar(atual.getEsquerda());
-			} else if (atual.getEsquerda() == null) {
-				return rotacionar(atual.getDireita());
-			} else {
-				No pre = atual.getEsquerda();
-				No predecessor;
-				if (pre.getDireita() == null) {
-					predecessor = pre;
-					predecessor.setDireita(atual.getDireita());
-				} else {
-					while (pre.getDireita().getDireita() != null) {
-						pre = pre.getDireita();
-					}
-					predecessor = pre.getDireita();
-					pre.setDireita(predecessor.getEsquerda());
-					predecessor.setEsquerda(atual.getEsquerda());
-					predecessor.setDireita(atual.getDireita());
-				}
-				return predecessor;
-			}
-		} else {
-			if (comparar(n, atual.getValor()) > 0) {
-				atual.setDireita(rotacionar(remover(atual.getDireita(), n)));
-			} else {
-				atual.setEsquerda(rotacionar(remover(atual.getEsquerda(), n)));
-			}
-			return rotacionar(atual);
-		}
-	}
-
-	public void resetComparacoes() {
-		this.comparacoes = 0;
-	}
-
-	private No atualizarAlturaFator(No n) {
-		int alturaEsquerda, alturaDireita;
-		alturaEsquerda = n.getEsquerda() != null ? n.getEsquerda().getAltura() : -1;
-		alturaDireita = n.getDireita() != null ? n.getDireita().getAltura() : -1;
-		n.setFatorBalanco(alturaEsquerda - alturaDireita);
-		n.setAltura((alturaDireita > alturaEsquerda ? alturaDireita : alturaEsquerda) + 1);
-		return n;
-	}
-
-	private No rotacionar(No n) {
-		if (n == null)
-			return n;
-		n = atualizarAlturaFator(n);
-		if (n.getFatorBalanco() < -1) {
-			if (n.getDireita().getFatorBalanco() > 0) {
-				n = rotacionarDireitaEsquerda(n);
-			} else {
-				n = rotacionarEsquerda(n);
-			}
-		} else if (n.getFatorBalanco() > 1) {
-			if (n.getEsquerda().getFatorBalanco() < 0) {
-				n = rotacionarEsquerdaDireita(n);
-			} else {
-				n = rotacionarDireita(n);
-			}
-		}
-		return n;
-	}
-
-	private No rotacionarEsquerda(No n) {
-		if (debug) {
-			System.out.println("Rotação à esquerda efetuada no nó:" + n.getValor());
-		}
-		No novaRaiz = n.getDireita();
-		No temp = n.getDireita().getEsquerda();
-		n.getDireita().setEsquerda(n);
-		n.setDireita(temp);
-		n = atualizarAlturaFator(n);
-		return novaRaiz;
-	}
-
-	private No rotacionarDireita(No n) {
-		if (debug) {
-			System.out.println("Rotação à direita efetuada no nó:" + n.getValor());
-		}
-		No newRoot = n.getEsquerda();
-		No temp = n.getEsquerda().getDireita();
-		n.getEsquerda().setDireita(n);
-		n.setEsquerda(temp);
-		n = atualizarAlturaFator(n);
-		return newRoot;
-	}
-
-	private No rotacionarEsquerdaDireita(No n) {
-		if (debug) {
-			System.out.println("Rotação Esquerda/Direita efetuada no nó:" + n.getValor());
-		}
-		n.setEsquerda(rotacionarEsquerda(n.getEsquerda()));
-		n = rotacionarDireita(n);
-		return n;
-	}
-
-	private No rotacionarDireitaEsquerda(No n) {
-		if (debug) {
-			System.out.println("Rotação Direita/Esquerda efetuada no nó:" + n.getValor());
-		}
-		n.setDireita(rotacionarDireita(n.getDireita()));
-		n = rotacionarEsquerda(n);
-		return n;
-	}
-
-	private int comparar(Integer d1, Integer d2) {
-		if (d1 == null && d2 == null) {
+	private int altura(No no) {
+		if (no == null)
 			return 0;
-		} else if (d1 == null) {
-			return 1;
-		} else if (d2 == null) {
-			return -1;
-		} else {
-			return d1.compareTo(d2);
-		}
+		return no.getAltura();
 	}
 
-	public void addAll(Collection<Integer> c) {
-		for (Integer thing : c) {
-			inserir(thing);
+	private int max(int a, int b) {
+		return (a > b) ? a : b;
+	}
+
+	// Obtem o fator de balanço de um nó
+	private int getBalanco(No no) {
+		if (no == null)
+			return 0;
+		return altura(no.getEsquerda()) - altura(no.getDireita());
+	}
+	
+	private No rotacionarDireita(No y,boolean debugLocal) {
+		if (debugLocal) {
+			System.out.println("Rotação Direita em nó: "+raiz.getValor());
+			System.out.println("T1, T2 e T3 são subárvores.");
+			System.out.println("                y                                x");
+			System.out.println("               / \\     Rotação Dir. (y)        /  \\");
+			System.out.println("              x   T3    – - – - – - - –>       T1   y");
+			System.out.println("             / \\                                  / \\");
+			System.out.println("            T1  T2                                T2  T3");
 		}
+		No x = y.getEsquerda();
+		No t2 = x.getDireita();
+
+		// Execução das trocas
+		x.setDireita(y);
+		y.setEsquerda(t2);
+
+		// Atualização as alturas
+		y.setAltura(max(altura(y.getEsquerda()), altura(y.getDireita())) + 1);
+		x.setAltura(max(altura(x.getEsquerda()), altura(x.getDireita())) + 1);
+
+		return x;
+	}
+
+	private No rotacionarEsquerda(No y, boolean debugLocal) {
+		if (debugLocal) {
+			System.out.println("T1, T2 e T3 são subárvores.");
+			System.out.println("Rotação Esquerda em nó: "+raiz.getValor());
+			System.out.println("               y                                 x");
+			System.out.println("              / \\      Rotação Esq. (y)         / \\");           
+			System.out.println("             T1  x      – - – - – - - –>       y   T3");         
+			System.out.println("                / \\                           / \\");                        
+			System.out.println("               T2  T3                        T1  T2");
+		}
+		No x = y.getDireita();
+		No t2 = x.getEsquerda();
+
+		// Execução das trocas
+		x.setEsquerda(y);
+		y.setDireita(t2);
+
+		// Atualização as alturas
+		y.setAltura(max(altura(y.getEsquerda()), altura(y.getDireita())) + 1);
+		x.setAltura(max(altura(x.getEsquerda()), altura(x.getDireita())) + 1);
+
+		return x;
+	}
+
+	private No inserir(No no, int valor) {
+		/* 1. Percorre a árvore até o ponto de inserção e insere */
+		if (no == null)
+			return (new No(valor));
+
+		if (valor < no.getValor()) {
+			no.setEsquerda(inserir(no.getEsquerda(), valor));
+			this.comparacoes++;
+		} else if (valor > no.getValor()) {
+			no.setDireita(inserir(no.getDireita(), valor));
+			this.comparacoes++;
+		} else // Caso o valor já exista, retorne ele.
+			return no;
+
+		/* 2. Após inserção, atualiza a altura desse nó ancestral */
+		no.setAltura(1 + max(altura(no.getEsquerda()), altura(no.getDireita())));
+
+		/*
+		 * 3. Obtem o balanço desse nó ancestral para verificar se houve algum
+		 * desbalanceamento
+		 */
+		int balanco = getBalanco(no);
+
+		// Verificando desbalanceamentos...
+		// Caso 1:
+		if (balanco > 1 && valor < no.getEsquerda().getValor()) {
+			if (this.debug) {
+				System.out.println("Rotação Direita em nó: "+no.getValor());
+				System.out.println("T1, T2, T3 e T4 são subárvores.");
+				System.out.println("                   z                                       y");
+				System.out.println("                  / \\                                   /   \\");
+				System.out.println("                 y   T4      Rotação Dir. (z)           x     z");
+				System.out.println("                / \\         – - – - – - - –>         /  \\  / \\");
+				System.out.println("               x   T3                                T1  T2 T3  T4");
+				System.out.println("              / \\");
+				System.out.println("            T1   T2");
+			}
+			return rotacionarDireita(no,false);
+		}
+
+		// Caso 2:
+		if (balanco > 1 && valor > no.getEsquerda().getValor()) {
+			if (this.debug) {
+				System.out.println("Rotação Dupla iniciando em nó: "+no.getValor());
+				System.out.println("T1, T2, T3 e T4 são subárvores.");
+				System.out.println("                 z                                z                           x");
+				System.out.println("                / \\                            /   \\                       /  \\"); 
+				System.out.println("               y   T4   Rotação Esq. (y)       x    T4  Rotação Dir. (z)    y     z");
+				System.out.println("              / \\      – - – - – - - –>      /  \\     – - – - – - - –>   / \\   / \\");
+				System.out.println("            T1   x                           y    T3                      T1  T2 T3  T4");
+				System.out.println("                / \\                        / \\");
+				System.out.println("              T2   T3                     T1   T2");
+			}
+			no.setEsquerda(rotacionarEsquerda(no.getEsquerda(),true));
+			return rotacionarDireita(no,true);
+		}
+		
+		// Caso 3:
+		if (balanco < -1 && valor > no.getDireita().getValor()) {
+			if (this.debug) {
+				System.out.println("Rotação Esquerda em nó: "+no.getValor()+"...");
+				System.out.println("T1, T2, T3 e T4 são subárvores.");
+				System.out.println("               z                               y");
+				System.out.println("             /  \\                            /   \\");
+				System.out.println("            T1   y      Rotação Esq. (z)    z     x");
+				System.out.println("                /  \\   - - - - - - - ->    / \\   / \\");
+				System.out.println("               T2   x                     T1 T2 T3  T4");
+				System.out.println("                   / \\");
+				System.out.println("                  T3  T4");
+			}
+			return rotacionarEsquerda(no,false);			
+		}
+
+
+		// Caso 4:
+		if (balanco < -1 && valor < no.getDireita().getValor()) {
+			if (this.debug) {
+				System.out.println("Rotação Dupla iniciando em nó: "+no.getValor()+"...");
+				System.out.println("T1, T2, T3 e T4 são subárvores.");
+				System.out.println("               z                             z                             x");
+				System.out.println("              / \\                          / \\                          /   \\");
+				System.out.println("            T1   y    Rotação Dir. (y)    T1   x    Rotação Esq. (z)     z     y");
+				System.out.println("                / \\  - - - - - - - - ->     /  \\  - - - - - - - - ->  / \\   / \\");
+				System.out.println("               x   T4                      T2   y                    T1 T2 T3  T4");
+				System.out.println("              / \\                              /  \\");
+				System.out.println("            T2   T3                           T3   T4");
+			}
+			no.setDireita(rotacionarDireita(no.getDireita(),true));
+			return rotacionarEsquerda(no,true);
+		}
+
+		return no;
+	}
+
+	// Dada uma subárvore, obtem o menor elemento da subárvore 
+	private No getNoMenorValor(No no) {
+		No atual = no;
+		while (atual.getEsquerda() != null) {
+			atual = atual.getEsquerda();
+		}
+		return atual;
+	}
+
+	private No remover(No no, int key) {
+		// Condição de parada da remoção
+		if (no == null)
+			return no;
+
+		// 1. Percurso na BST para remoção...
+		if (key < no.getValor()) {
+			this.comparacoes++;
+			no.setEsquerda(remover(no.getEsquerda(), key));
+		} else if (key > no.getValor()) {
+			this.comparacoes++;
+			no.setDireita(remover(no.getDireita(), key));
+		} else {
+			// Nó encontrado para remoção
+			this.comparacoes++;
+			// Verificando se nó é folha ou possui filhos
+			// Caso 1: Possui algum filho ou nenhum
+			if ((no.getEsquerda() == null) || (no.getDireita() == null)) {
+				No temp = null;
+				if (temp == no.getEsquerda())
+					temp = no.getDireita();
+				else
+					temp = no.getEsquerda();
+
+				//Caso 1.1: Não possui filho e remove
+				if (temp == null) {
+					temp = no;
+					no = null;
+				} else {// 1.2: Possui filho
+					no = temp; // Filho substitui pai
+				}
+			} else {
+				// Caso 2: Possui os dois filhos
+				// Obtem o menor elemento da subárvore à direita do nó a ser removido,
+				// pois ele o substituirá
+				No temp = getNoMenorValor(no.getDireita());
+
+				// Seta o novo nó da posição removida 
+				no.setValor(temp.getValor());
+
+				// Remoção do menor elemento da subárvore à direita, após transferência
+				// do mesmo para substituir nó removido.
+				no.setDireita(remover(no.getDireita(), temp.getValor()));
+			}
+		}
+
+		// Caso em que a árvore possuia apenas um nó após a remoção
+		if (no == null)
+			return no;
+
+		// 2. Após remoção, atualizar a altura do nó atual
+		no.setAltura(max(altura(no.getEsquerda()), altura(no.getDireita())) + 1);
+
+		// 3. Obter o balanço do nó atual para verificar desbalanceamentos
+		int balanco = getBalanco(no);
+
+		// Verificando desbalanceamentos...
+		// Caso 1:
+		if (balanco > 1 && getBalanco(no.getEsquerda()) >= 0) {
+			if (this.debug) {
+				System.out.println("Rotação Direita em nó: "+no.getValor());
+				System.out.println("T1, T2, T3 e T4 são subárvores.");
+				System.out.println("                   z                                       y");
+				System.out.println("                  / \\                                   /   \\");
+				System.out.println("                 y   T4      Rotação Dir. (z)           x     z");
+				System.out.println("                / \\         – - – - – - - –>         /  \\  / \\");
+				System.out.println("               x   T3                                T1  T2 T3  T4");
+				System.out.println("              / \\");
+				System.out.println("            T1   T2");
+			}
+			return rotacionarDireita(no,false);
+		}
+		
+		// Caso 2:
+		if (balanco > 1 && getBalanco(no.getEsquerda()) < 0) {
+			if (this.debug) {
+				if (this.debug) {
+					System.out.println("Rotação Dupla iniciando em nó: "+no.getValor());
+					System.out.println("T1, T2, T3 e T4 são subárvores.");
+					System.out.println("                 z                                z                           x");
+					System.out.println("                / \\                            /   \\                       /  \\"); 
+					System.out.println("               y   T4   Rotação Esq. (y)       x    T4  Rotação Dir. (z)    y     z");
+					System.out.println("              / \\      – - – - – - - –>      /  \\     – - – - – - - –>   / \\   / \\");
+					System.out.println("            T1   x                           y    T3                      T1  T2 T3  T4");
+					System.out.println("                / \\                        / \\");
+					System.out.println("              T2   T3                     T1   T2");
+				}
+			}
+			no.setEsquerda(rotacionarEsquerda(no.getEsquerda(),true));
+			return rotacionarDireita(no,true);
+		}
+
+		// Caso 3:
+		if (balanco < -1 && getBalanco(no.getDireita()) <= 0) {
+			if (this.debug) {
+				if (this.debug) {
+					System.out.println("Rotação Esquerda em nó: "+no.getValor()+"...");
+					System.out.println("T1, T2, T3 e T4 são subárvores.");
+					System.out.println("               z                                y");
+					System.out.println("             /  \\                            /   \\");
+					System.out.println("            T1   y      Rotação Esq. (z)    z     x");
+					System.out.println("                /  \\   - - - - - - - ->    / \\   / \\");
+					System.out.println("               T2   x                      T1  T2 T3  T4");
+					System.out.println("                   / \\");
+					System.out.println("                  T3  T4");
+				}
+			}
+			return rotacionarEsquerda(no,false);
+		}
+
+		// Caso 4:
+		if (balanco < -1 && getBalanco(no.getDireita()) > 0) {
+			if (this.debug) {
+				if (this.debug) {
+					System.out.println("Rotação Dupla iniciando em nó: "+no.getValor()+"...");
+					System.out.println("T1, T2, T3 e T4 são subárvores.");
+					System.out.println("               z                             z                             x");
+					System.out.println("              / \\                          / \\                          /   \\");
+					System.out.println("            T1   y    Rotação Dir. (y)    T1   x    Rotação Esq. (z)     z     y");
+					System.out.println("                / \\  - - - - - - - - ->     /  \\  - - - - - - - - ->  / \\   / \\");
+					System.out.println("               x   T4                      T2   y                    T1 T2 T3  T4");
+					System.out.println("              / \\                              /  \\");
+					System.out.println("            T2   T3                           T3   T4");
+				}
+			}
+			no.setDireita(rotacionarDireita(no.getDireita(),true));
+			return rotacionarEsquerda(no,true);
+		}
+
+		return no;
 	}
 
 	public No getRaiz() {
 		return raiz;
 	}
 
-	public void setRaiz(No root) {
-		this.raiz = root;
+	public void setRaiz(No raiz) {
+		this.raiz = raiz;
 	}
 
 	public int getComparacoes() {

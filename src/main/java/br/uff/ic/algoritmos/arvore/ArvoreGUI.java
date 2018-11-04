@@ -2,6 +2,7 @@ package br.uff.ic.algoritmos.arvore;
 
 import java.awt.Container;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -101,14 +102,23 @@ public class ArvoreGUI extends JFrame {
 		anterior.setTitle("Árvore Anterior");
 		ArvoreAVL arvore = new ArvoreAVL();
 
-		System.out.println(
-				"Carregamento inicial da árvore. Com quantos números aleatórios deseja carregar inicialmente a árvore? ");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		/*System.out.println(
+				"Carregamento inicial da árvore. Com quantos números aleatórios deseja carregar inicialmente a árvore? ");*/
+		//BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		FileReader fileReader = new FileReader(args[0]);
+		BufferedReader br = new BufferedReader(fileReader);
+		
 		String leitura = br.readLine();
-		Integer[] randoms = null;
+		leitura.replace(" ", "");
+		String[] numeros = leitura.split(",");
+		Integer[] randoms = new Integer[numeros.length];
+		for (int i = 0; i < numeros.length; i++) {
+			randoms[i]= Integer.valueOf(numeros[i]);
+		}
 		try {
-			Integer tamanho = Integer.parseInt(leitura);
-			randoms = gerarAleatorios(tamanho);
+			//Integer tamanho = Integer.parseInt(leitura);
+			//randoms = gerarAleatorios(tamanho);
 			System.out.println("Valores aleatórios inseridos na seguinte ordem:");
 			System.out.println();
 			for (int i = 0; i < randoms.length; i++) {
@@ -128,7 +138,7 @@ public class ArvoreGUI extends JFrame {
 		}
 		System.out.println();
 		arvore.setDebug(true);
-		while (true) {
+		while (true) {			
 
 			System.out.println();
 			System.out.print("Escolha uma opção (B)uscar, (I)nserir, (R)emover, (S)air: ");
@@ -205,7 +215,7 @@ public class ArvoreGUI extends JFrame {
 			}
 			if (arvore != null && arvore.getRaiz() != null) {
 				showInDialog(dialog, getPanel(arvore));
-				anterior.setLocation(anterior.getX(), dialog.getY()+dialog.getHeight());				
+				anterior.setLocation(dialog.getX(), dialog.getY()+dialog.getHeight());				
 			}
 		}
 

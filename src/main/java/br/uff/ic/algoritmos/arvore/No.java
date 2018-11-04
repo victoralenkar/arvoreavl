@@ -5,9 +5,9 @@ public class No {
 	private Integer valor;
 	private No esquerda, direita;
 	private int altura;
-	private int fatorBalanco;
 
 	public No(Integer data) {
+		this.altura = 1;
 		setValor(data);
 	}
 
@@ -41,13 +41,5 @@ public class No {
 
 	public void setAltura(int height) {
 		this.altura = height;
-	}
-
-	public int getFatorBalanco() {
-		return fatorBalanco;
-	}
-
-	public void setFatorBalanco(int bf) {
-		this.fatorBalanco = bf;
 	}
 }
